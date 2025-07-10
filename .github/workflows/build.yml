@@ -72,59 +72,27 @@ jobs:
 
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release v${{ github.run_number }}
-        body: |
-          Automated build from commit ${{ github.sha }}
-          
-          ## Binaries
-          - **Windows**: `rosetta-translate.exe`
-          - **macOS ARM**: `rosetta-translate-macos-arm`
-          - **macOS Intel**: `rosetta-translate-macos-intel`
-          - **Linux**: `rosetta-translate-linux`
-        draft: false
-        prerelease: false
+      run: |
+        gh release create v${{ github.run_number }} \
+          --title "Release v${{ github.run_number }}" \
+          --notes "Automated build from commit ${{ github.sha }}
+        
+        ## Binaries
+        - **Windows**: \`rosetta-translate.exe\`
+        - **macOS ARM**: \`rosetta-translate-macos-arm\`
+        - **macOS Intel**: \`rosetta-translate-macos-intel\`
+        - **Linux**: \`rosetta-translate-linux\`" \
+          --draft=false \
+          --prerelease=false
 
     - name: Upload Windows Binary
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/rosetta-translate.exe
-        asset_name: rosetta-translate-windows.exe
-        asset_content_type: application/octet-stream
+      run: gh release upload v${{ github.run_number }} ./dist/rosetta-translate.exe --clobber
 
     - name: Upload macOS ARM Binary
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/rosetta-translate-macos-arm
-        asset_name: rosetta-translate-macos-arm
-        asset_content_type: application/octet-stream
+      run: gh release upload v${{ github.run_number }} ./dist/rosetta-translate-macos-arm --clobber
 
     - name: Upload macOS Intel Binary
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/rosetta-translate-macos-intel
-        asset_name: rosetta-translate-macos-intel
-        asset_content_type: application/octet-stream
+      run: gh release upload v${{ github.run_number }} ./dist/rosetta-translate-macos-intel --clobber
 
     - name: Upload Linux Binary
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/rosetta-translate-linux
-        asset_name: rosetta-translate-linux
-        asset_content_type: application/octet-stream 
+      run: gh release upload v${{ github.run_number }} ./dist/rosetta-translate-linux --clobber 
