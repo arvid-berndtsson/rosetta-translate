@@ -1,0 +1,51 @@
+# .mise.toml
+#
+# Defines tasks for the Rosetta Translate project.
+# Run `mise ls` to see all available tasks.
+# Remember to run `mise trust` to enable these tasks.
+
+[tasks]
+
+# --- Development Task ---
+
+[tasks.run]
+description = "Run the translator script in development mode"
+# The {{...}} passes all arguments after `mise run --` directly to the script.
+run = "deno run --allow-net --allow-read --allow-write --allow-env main.ts {{...}}"
+
+# --- Compilation Tasks ---
+
+[tasks.build]
+description = "Compile the script into a native executable for the current OS"
+# This creates a binary named 'rosetta-translate' or 'rosetta-translate.exe'
+run = "deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate main.ts"
+
+[tasks.build-all]
+description = "Compile the script for all major platforms"
+# This runs all the platform-specific build tasks below.
+run = [
+  "mise run build:windows",
+  "mise run build:macos-arm",
+  "mise run build:macos-intel",
+  "mise run build:linux",
+]
+depends = ["build:windows", "build:macos-arm", "build:macos-intel", "build:linux"]
+
+
+# --- Platform-Specific Compilation Tasks ---
+
+[tasks."build:windows"]
+description = "Compile for Windows (x64)"
+run = "deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate.exe --target x86_64-pc-windows-msvc main.ts"
+
+[tasks."build:macos-arm"]
+description = "Compile for macOS (Apple Silicon)"
+run = "deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate --target aarch64-apple-darwin main.ts"
+
+[tasks."build:macos-intel"]
+description = "Compile for macOS (Intel)"
+run = "deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate --target x86_64-apple-darwin main.ts"
+
+[tasks."build:linux"]
+description = "Compile for Linux (x64)"
+run = "deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate --target x86_64-unknown-linux-gnu main.ts"
