@@ -59,6 +59,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    env:
+      GH_TOKEN: ${{ github.token }}
     
     steps:
     - name: Checkout code
