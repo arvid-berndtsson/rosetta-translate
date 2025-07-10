@@ -1,7 +1,7 @@
 # Rosetta Translate 📜
 
 [![Deno](https://img.shields.io/badge/deno-^2.40-black?logo=deno)](https://deno.land)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A powerful, flexible, and cost-effective command-line tool for translating large text files using your favorite AI models via [OpenRouter](https://openrouter.ai).
 
@@ -23,9 +23,17 @@ Rosetta Translate is designed to handle long documents, like meeting transcripts
 
 ### Installation & Setup
 
+#### Option 1: Download Pre-built Binaries (Recommended)
+Download the latest release for your platform from the [Releases page](https://github.com/arvid-berndtsson/rosetta-translate/releases). The latest version includes binaries for:
+- **Windows**: `rosetta-translate-windows.exe`
+- **macOS ARM**: `rosetta-translate-macos-arm`
+- **macOS Intel**: `rosetta-translate-macos-intel`
+- **Linux**: `rosetta-translate-linux`
+
+#### Option 2: Build from Source
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/rosetta-translate.git
+    git clone https://github.com/arvid-berndtsson/rosetta-translate.git
     cd rosetta-translate
     ```
 
@@ -46,11 +54,19 @@ deno run --allow-net --allow-read --allow-write --allow-env main.ts --input <sou
 
 #### On Windows:
 ```bash
-rosetta-translate.exe --input transcript_en.txt --output transcript_de.txt
+rosetta-translate-windows.exe --input transcript_en.txt --output transcript_de.txt
 ```
-#### On macOS / Linux:
+#### On macOS ARM:
 ```bash
-./rosetta-translate --input transcript_en.txt --output transcript_de.txt
+./rosetta-translate-macos-arm --input transcript_en.txt --output transcript_de.txt
+```
+#### On macOS Intel:
+```bash
+./rosetta-translate-macos-intel --input transcript_en.txt --output transcript_de.txt
+```
+#### On Linux:
+```bash
+./rosetta-translate-linux --input transcript_en.txt --output transcript_de.txt
 ```
 ### 📦 Compiling to an Executable
 Create a self-contained executable with the following command.
@@ -64,4 +80,4 @@ deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --
 ```
 
 📄 License
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
