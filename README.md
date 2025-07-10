@@ -1,6 +1,6 @@
 # Rosetta Translate 📜
 
-[![Deno](https://img.shields.io/badge/deno-^1.40-black?logo=deno)](https://deno.land)
+[![Deno](https://img.shields.io/badge/deno-^2.40-black?logo=deno)](https://deno.land)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A powerful, flexible, and cost-effective command-line tool for translating large text files using your favorite AI models via [OpenRouter](https://openrouter.ai).
