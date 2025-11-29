@@ -43,7 +43,13 @@ async function callAI(textChunk: string, openai: OpenAI): Promise<string> {
       max_tokens: 2048,
     });
 
-    return completion.choices[0]?.message?.content?.trim() || "";
+    const content = completion.choices[0]?.message?.content?.trim();
+    
+    if (!content) {
+      throw new Error("API returned empty response");
+    }
+    
+    return content;
 
   } catch (error) {
     if (error instanceof Error) {
@@ -54,12 +60,12 @@ async function callAI(textChunk: string, openai: OpenAI): Promise<string> {
   }
 }
 
-async function translateText(text: string, apiKey: string): Promise<TranslateResponse> {
+async function translateText(text: string, apiKey: string, referer = 'https://github.com/arvid-berndtsson/rosetta-translate'): Promise<TranslateResponse> {
   const openai = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey: apiKey,
     defaultHeaders: {
-      'HTTP-Referer': 'https://github.com/arvid-berndtsson/rosetta-translate',
+      'HTTP-Referer': referer,
       'X-Title': 'Rosetta Translate',
     },
   });
@@ -71,12 +77,10 @@ async function translateText(text: string, apiKey: string): Promise<TranslateRes
     throw new Error("Input text is empty or contains no content to translate");
   }
 
-  const translatedChunks: string[] = [];
-
-  for (const chunk of chunks) {
-    const translatedChunk = await callAI(chunk, openai);
-    translatedChunks.push(translatedChunk);
-  }
+  // Process chunks in parallel with Promise.all for better performance
+  const translatedChunks = await Promise.all(
+    chunks.map(chunk => callAI(chunk, openai))
+  );
 
   const fullTranslatedText = translatedChunks.join("\n\n");
 
@@ -184,7 +188,9 @@ export default {
         }
 
         // Perform translation
-        const result = await translateText(body.text, apiKey);
+        // Allow custom referer from environment or use default
+        const referer = env.HTTP_REFERER || 'https://github.com/arvid-berndtsson/rosetta-translate';
+        const result = await translateText(body.text, apiKey, referer);
 
         return new Response(JSON.stringify(result), {
           status: 200,

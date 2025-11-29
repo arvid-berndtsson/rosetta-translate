@@ -41,6 +41,9 @@ jobs:
               "bindings": {
                 "OPENROUTER_API_KEY": {
                   "value": "${{ secrets.OPENROUTER_API_KEY }}"
+                },
+                "HTTP_REFERER": {
+                  "value": "https://github.com/arvid-berndtsson/rosetta-translate"
                 }
               }
             }
