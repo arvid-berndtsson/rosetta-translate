@@ -57,7 +57,7 @@ info "Installing Denoflare with updated command..."
 
 # Try the installation
 # Generate a unique name to avoid conflicts with existing installations
-DENOFLARE_TEST_NAME="denoflare-test-$$"
+DENOFLARE_TEST_NAME="denoflare-test-$(date +%s)"
 
 if deno install \
     --unstable-worker-options \
@@ -142,7 +142,7 @@ if [ -f ".github/workflows/deploy-cloudflare.yml" ]; then
     pass_test "deploy-cloudflare.yml exists"
     
     # Check if it contains the --allow-import flag
-    if grep -q "\-\-allow-import" .github/workflows/deploy-cloudflare.yml; then
+    if grep -q -- "--allow-import" .github/workflows/deploy-cloudflare.yml; then
         pass_test "Workflow contains --allow-import flag"
     else
         fail_test "Workflow is missing --allow-import flag"
@@ -167,7 +167,7 @@ echo "--------------------------------------------"
 FILES_TO_CHECK=("README.md" "CLOUDFLARE_DEPLOYMENT.md" "install-denoflare.sh")
 for file in "${FILES_TO_CHECK[@]}"; do
     if [ -f "$file" ]; then
-        if grep -q "\-\-allow-import" "$file"; then
+        if grep -q -- "--allow-import" "$file"; then
             pass_test "$file contains --allow-import flag"
         else
             fail_test "$file is missing --allow-import flag"
