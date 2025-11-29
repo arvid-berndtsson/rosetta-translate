@@ -22,7 +22,7 @@ echo ""
 
 # Install Denoflare
 echo "Installing Denoflare from GitHub..."
-deno install --unstable-worker-options --allow-read --allow-net --global --allow-env --allow-run --name denoflare --force https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts
+deno install --unstable-worker-options --allow-read --allow-net --allow-import --global --allow-env --allow-run --name denoflare --force https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts
 
 if [ $? -eq 0 ]; then
     echo ""

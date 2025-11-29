@@ -26,7 +26,7 @@ Rosetta Translate can be deployed as a Cloudflare Worker, providing a serverless
 
 2. **Denoflare CLI**
    ```bash
-   deno install --unstable-worker-options --allow-read --allow-net --global --allow-env --allow-run --name denoflare --force https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts
+   deno install --unstable-worker-options --allow-read --allow-net --allow-import --global --allow-env --allow-run --name denoflare --force https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts
    ```
 
 3. **Cloudflare Account**
