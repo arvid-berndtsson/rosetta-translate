@@ -1,0 +1,73 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'worker.ts'
+      - '.denoflare'
+      - '.github/workflows/deploy-cloudflare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Deno
+      uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.4.0
+
+    - name: Install Denoflare
+      run: |
+        deno install --unstable-worker-options --allow-read --allow-net --global --allow-env --allow-run --name denoflare --force https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts
+
+    - name: Create .denoflare config
+      run: |
+        cat > .denoflare << EOF
+        {
+          "\$schema": "https://raw.githubusercontent.com/skymethod/denoflare/v0.5.11/common/config.schema.json",
+          "scripts": {
+            "rosetta-translate": {
+              "path": "./worker.ts",
+              "localPort": 8787,
+              "bindings": {
+                "OPENROUTER_API_KEY": {
+                  "value": "${{ secrets.OPENROUTER_API_KEY }}"
+                },
+                "HTTP_REFERER": {
+                  "value": "https://github.com/arvid-berndtsson/rosetta-translate"
+                }
+              }
+            }
+          },
+          "profiles": {
+            "default": {
+              "accountId": "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}",
+              "apiToken": "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+            }
+          }
+        }
+        EOF
+
+    - name: Deploy to Cloudflare Workers
+      run: |
+        export PATH="$HOME/.deno/bin:$PATH"
+        denoflare push rosetta-translate
+      env:
+        CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+    - name: Deployment Summary
+      run: |
+        echo "✅ Successfully deployed to Cloudflare Workers!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Your worker should be available at:" >> $GITHUB_STEP_SUMMARY
+        echo "https://rosetta-translate.<your-subdomain>.workers.dev" >> $GITHUB_STEP_SUMMARY

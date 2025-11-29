@@ -1,6 +1,9 @@
 {
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "dev": "deno run --watch main.ts",
+    "worker:serve": "denoflare serve worker.ts --port 8787",
+    "worker:push": "denoflare push rosetta-translate",
+    "worker:tail": "denoflare tail rosetta-translate"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1"
