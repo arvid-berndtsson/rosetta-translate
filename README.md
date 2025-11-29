@@ -3,83 +3,168 @@
 [![Deno](https://img.shields.io/badge/deno-^2.40-black?logo=deno)](https://deno.land)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A powerful, flexible, and cost-effective tool for translating large text files using your favorite AI models via [OpenRouter](https://openrouter.ai).
+A powerful, flexible, and cost-effective translation tool available as both a **web application** and **command-line tool** for translating large text files using your favorite AI models via [OpenRouter](https://openrouter.ai) or [OpenAI](https://openai.com).
 
 Rosetta Translate is designed to handle long documents, like meeting transcripts or reports, that exceed the context window of most AI models. It intelligently splits the text into logical chunks, translates each one, and seamlessly reconstructs the document in the target language.
 
-Available as both a **command-line tool** and a **web API** (deployable to Cloudflare Workers).
+![Rosetta Translate Web App](https://github.com/user-attachments/assets/3e8b4974-1ba2-4154-b187-be60c0a6dd6e)
 
 ## ✨ Key Features
 
-*   **📚 Translate Large Files**: Overcomes AI model context limits by translating documents paragraph by paragraph.
-*   **💸 Cost-Effective & Flexible**: Leverages [OpenRouter](https://openrouter.ai) to let you choose from a wide variety of models.
-*   **🏗️ Preserves Structure**: Retains original paragraph breaks, speaker labels, and overall document flow.
-*   **📦 Single Executable**: Can be compiled into a single, dependency-free executable for Windows, macOS, or Linux.
-*   **☁️ Cloud Deployment**: Deploy as a web API to Cloudflare Workers for serverless edge translation.
+*   **🌐 Web Application**: Easy-to-use web interface with a beautiful design inspired by Deno
+*   **🔑 Bring Your Own Key**: Use your own API keys from OpenRouter or OpenAI - your keys are never stored
+*   **🎯 Multiple Providers**: Choose between OpenRouter (access to many models) or OpenAI (direct API)
+*   **📚 Translate Large Files**: Overcomes AI model context limits by translating documents paragraph by paragraph
+*   **💸 Cost-Effective & Flexible**: Choose from a wide variety of models including Claude, GPT-4, Gemini, and more
+*   **🏗️ Preserves Structure**: Retains original paragraph breaks, speaker labels, and overall document flow
+*   **📦 CLI Available**: Also available as a command-line tool and single executable for automation
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 1.  **Deno**: You need the Deno runtime installed. You can install it from [deno.land](https://deno.land).
-2.  **OpenRouter API Key**: Sign up at [OpenRouter.ai](https://openrouter.ai) and create an API key.
+2.  **API Key**: Get an API key from [OpenRouter.ai](https://openrouter.ai) or [OpenAI](https://platform.openai.com).
 
-### Installation & Setup
+## 🌐 Web Application
 
-#### Option 1: Download Pre-built Binaries (Recommended)
-Download the latest release for your platform from the [Releases page](https://github.com/arvid-berndtsson/rosetta-translate/releases). The latest version includes binaries for:
-- **Windows**: `rosetta-translate-windows.exe`
-- **macOS ARM**: `rosetta-translate-macos-arm`
-- **macOS Intel**: `rosetta-translate-macos-intel`
-- **Linux**: `rosetta-translate-linux`
+### Running the Web App
 
-#### Option 2: Build from Source
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/arvid-berndtsson/rosetta-translate.git
     cd rosetta-translate
     ```
 
-2.  **Create a `.env` file** and add your OpenRouter API key:
+2.  **Start the web server:**
+    ```bash
+    deno task webapp
     ```
-    OPENROUTER_API_KEY="sk-or-your-secret-key-here"
+    Or with auto-reload during development:
+    ```bash
+    deno task webapp:dev
     ```
 
-## ⚙️ Usage
+3.  **Open your browser** and navigate to `http://localhost:8000`
 
-### 1. Running with Deno
+4.  **Enter your settings:**
+    - Paste your API key (OpenRouter or OpenAI)
+    - Select your provider (OpenRouter or OpenAI)
+    - Choose your model
+    - Select source and target languages
+    - Enter text and click "Translate"
+
+### Features
+- ✨ Beautiful, modern UI inspired by Deno's website with orange accents
+- 🔒 Secure: Your API key is never stored or logged
+- 🎨 Responsive design works on desktop and mobile
+- 🚀 Real-time translation with progress feedback
+- 🌍 Support for 11+ languages
+
+## ⚙️ Command-Line Usage
+
+### 1. Basic Usage with Deno
 
 ```bash
-deno run --allow-net --allow-read --allow-write --allow-env main.ts --input <source-file.txt> --output <translated-file.txt> --api-key <API-KEY>
+deno run --allow-net --allow-read --allow-write --allow-env main.ts \
+  --input <source-file.txt> \
+  --output <translated-file.txt> \
+  --api-key <API-KEY>
 ```
 
-### 2. Running the Compiled Executable
+### 2. With Custom Options
+
+```bash
+deno run --allow-net --allow-read --allow-write --allow-env main.ts \
+  --input transcript_en.txt \
+  --output transcript_de.txt \
+  --api-key sk-or-your-key \
+  --provider openrouter \
+  --model anthropic/claude-3.5-sonnet \
+  --source-lang English \
+  --target-lang German
+```
+
+### 3. Using Environment Variables
+
+Create a `.env` file:
+```
+OPENROUTER_API_KEY="sk-or-your-secret-key-here"
+# or
+OPENAI_API_KEY="sk-your-openai-key-here"
+```
+
+Then run:
+```bash
+deno run --allow-net --allow-read --allow-write --allow-env main.ts \
+  --input transcript_en.txt \
+  --output transcript_de.txt
+```
+
+### 4. Running Pre-built Binaries
+
+Download the latest release for your platform from the [Releases page](https://github.com/arvid-berndtsson/rosetta-translate/releases):
 
 #### On Windows:
 ```bash
-rosetta-translate-windows.exe --input transcript_en.txt --output transcript_de.txt
+rosetta-translate-windows.exe --input transcript_en.txt --output transcript_de.txt --api-key YOUR_KEY
 ```
+
 #### On macOS ARM:
 ```bash
-./rosetta-translate-macos-arm --input transcript_en.txt --output transcript_de.txt
+./rosetta-translate-macos-arm --input transcript_en.txt --output transcript_de.txt --api-key YOUR_KEY
 ```
+
 #### On macOS Intel:
 ```bash
-./rosetta-translate-macos-intel --input transcript_en.txt --output transcript_de.txt
+./rosetta-translate-macos-intel --input transcript_en.txt --output transcript_de.txt --api-key YOUR_KEY
 ```
+
 #### On Linux:
 ```bash
-./rosetta-translate-linux --input transcript_en.txt --output transcript_de.txt
+./rosetta-translate-linux --input transcript_en.txt --output transcript_de.txt --api-key YOUR_KEY
 ```
+
 ### 📦 Compiling to an Executable
-Create a self-contained executable with the following command.
+
+Create a self-contained executable:
+
 #### For Windows:
 ```bash
-deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate.exe --target x86_64-pc-windows-msvc main.ts
+deno compile --allow-net --allow-read --allow-write --allow-env \
+  --output rosetta-translate.exe --target x86_64-pc-windows-msvc main.ts
 ```
+
 #### For macOS or Linux:
+```bash
+deno compile --allow-net --allow-read --allow-write --allow-env \
+  --output rosetta-translate main.ts
 ```
-deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate main.ts
+
+## 🎯 Supported Models
+
+### OpenRouter
+- Claude 3.5 Sonnet, Claude 3 Opus, Claude 3 Haiku
+- GPT-4 Turbo, GPT-4o, GPT-3.5 Turbo
+- Google Gemini Pro
+- Meta Llama 3.1 70B
+- And many more!
+
+### OpenAI Direct
+- GPT-4 Turbo, GPT-4, GPT-3.5 Turbo
+
+## 📁 Project Structure
+
+```
+rosetta-translate/
+├── main.ts           # CLI entry point
+├── webapp.ts         # Web server entry point
+├── lib/
+│   └── translator.ts # Shared translation logic
+├── public/
+│   └── index.html    # Web UI
+├── deno.json         # Deno configuration and tasks
+└── README.md         # This file
 ```
 
 ## ☁️ Deploy to Cloudflare Workers
