@@ -49,3 +49,21 @@ run = "deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow
 [tasks."build:linux"]
 description = "Compile for Linux (x64)"
 run = "deno compile --allow-net=openrouter.ai --allow-read --allow-write --allow-env --output rosetta-translate --target x86_64-unknown-linux-gnu main.ts"
+
+# --- Cloudflare Workers Deployment Tasks ---
+
+[tasks."worker:serve"]
+description = "Run the Cloudflare Worker locally for development"
+run = "denoflare serve worker.ts --port 8787"
+
+[tasks."worker:push"]
+description = "Deploy the worker to Cloudflare Workers"
+run = "denoflare push rosetta-translate"
+
+[tasks."worker:tail"]
+description = "Tail production logs from Cloudflare Workers"
+run = "denoflare tail rosetta-translate"
+
+[tasks."worker:install"]
+description = "Install Denoflare CLI (requires Deno)"
+run = "./install-denoflare.sh"

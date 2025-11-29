@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/skymethod/denoflare/v0.5.11/common/config.schema.json",
+  "scripts": {
+    "rosetta-translate": {
+      "path": "./worker.ts",
+      "localPort": 8787,
+      "bindings": {
+        "OPENROUTER_API_KEY": {
+          "value": "YOUR_OPENROUTER_API_KEY_HERE"
+        }
+      }
+    }
+  },
+  "profiles": {
+    "default": {
+      "accountId": "YOUR_CLOUDFLARE_ACCOUNT_ID_HERE",
+      "apiToken": "YOUR_CLOUDFLARE_API_TOKEN_HERE"
+    }
+  }
+}
