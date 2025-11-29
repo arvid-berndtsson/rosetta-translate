@@ -1,4 +1,4 @@
-// packages/shared/translator.ts - Shared translation logic
+// lib/translator.ts - Shared translation logic
 
 import OpenAI from "npm:openai";
 
