@@ -167,5 +167,118 @@ rosetta-translate/
 └── README.md         # This file
 ```
 
+## ☁️ Deploy to Cloudflare Workers
+
+Rosetta Translate can also be deployed as a web API to Cloudflare Workers, providing a serverless edge translation service.
+
+### Prerequisites
+
+1. **Deno**: Install Deno from [deno.land](https://deno.land)
+2. **Denoflare**: Install the Denoflare CLI tool
+   ```bash
+   deno install --unstable-worker-options --allow-read --allow-net --allow-import --global --allow-env --allow-run --name denoflare --force https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts
+   ```
+3. **Cloudflare Account**: Create a free account at [cloudflare.com](https://cloudflare.com)
+4. **OpenRouter API Key**: Get your API key from [OpenRouter.ai](https://openrouter.ai)
+
+### Testing the Deployment Setup (Dry Run)
+
+Before deploying, you can test that everything is configured correctly:
+
+```bash
+./test-deployment-dry-run.sh
+```
+
+This script validates:
+- Deno installation
+- Denoflare installation with the `--allow-import` flag
+- Worker TypeScript syntax
+- Configuration file structure
+- GitHub Actions workflow setup
+- Documentation consistency
+
+### Setup
+
+1. **Configure Denoflare**
+   
+   Copy the example configuration file:
+   ```bash
+   cp .denoflare.example .denoflare
+   ```
+   
+   Edit `.denoflare` and add your credentials:
+   - `accountId`: Your Cloudflare Account ID (found in Workers dashboard)
+   - `apiToken`: Your Cloudflare API token (create one with "Edit Cloudflare Workers" template)
+   - `OPENROUTER_API_KEY`: Your OpenRouter API key (optional, can be sent in API requests)
+
+2. **Test Locally**
+   
+   Run the worker locally to test:
+   ```bash
+   deno task worker:serve
+   # Or: denoflare serve worker.ts --port 8787
+   ```
+   
+   Visit `http://localhost:8787` to see the API information.
+
+3. **Deploy to Cloudflare**
+   
+   Push your worker to Cloudflare:
+   ```bash
+   deno task worker:push
+   # Or: denoflare push rosetta-translate
+   ```
+   
+   Your worker will be deployed and accessible at `https://rosetta-translate.<your-subdomain>.workers.dev`
+
+4. **Monitor Logs**
+   
+   Tail production logs in real-time:
+   ```bash
+   deno task worker:tail
+   # Or: denoflare tail rosetta-translate
+   ```
+
+### API Usage
+
+Once deployed, you can use the API:
+
+**Quick Test (using the test script):**
+```bash
+# Test locally
+./test-worker.sh
+
+# Test production
+./test-worker.sh https://rosetta-translate.<your-subdomain>.workers.dev sk-or-your-api-key
+```
+
+**Get API Information:**
+```bash
+curl https://rosetta-translate.<your-subdomain>.workers.dev
+```
+
+**Translate Text:**
+```bash
+curl -X POST https://rosetta-translate.<your-subdomain>.workers.dev/translate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Hello, this is a test.\n\nThis is another paragraph.",
+    "apiKey": "sk-or-your-api-key-here"
+  }'
+```
+
+**Response:**
+```json
+{
+  "translatedText": "Hallo, das ist ein Test.\n\nDas ist ein weiterer Absatz.",
+  "chunks": 2,
+  "model": "anthropic/claude-3.5-sonnet"
+}
+```
+
+### Environment Variables
+
+For production deployments, it's recommended to set the `OPENROUTER_API_KEY` as an environment variable in the Cloudflare Workers dashboard instead of sending it with each request.
+
 📄 License
 This project is licensed under the [MIT License](LICENSE).

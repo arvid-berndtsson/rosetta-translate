@@ -70,6 +70,10 @@ web_modules/
 .env.*
 !.env.example
 
+# Denoflare configuration with credentials
+.denoflare
+!.denoflare.example
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
