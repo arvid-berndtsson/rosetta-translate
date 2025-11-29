@@ -142,6 +142,15 @@ Rosetta Translate can also be deployed as a web API to Cloudflare Workers, provi
 
 Once deployed, you can use the API:
 
+**Quick Test (using the test script):**
+```bash
+# Test locally
+./test-worker.sh
+
+# Test production
+./test-worker.sh https://rosetta-translate.<your-subdomain>.workers.dev sk-or-your-api-key
+```
+
 **Get API Information:**
 ```bash
 curl https://rosetta-translate.<your-subdomain>.workers.dev
