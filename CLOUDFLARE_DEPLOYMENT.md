@@ -43,6 +43,33 @@ Rosetta Translate can be deployed as a Cloudflare Worker, providing a serverless
    - Sign up at [OpenRouter.ai](https://openrouter.ai)
    - Create an API key from your account settings
 
+## Testing Deployment Setup (Dry Run)
+
+Before configuring credentials and deploying, you can validate that the deployment setup is correct:
+
+```bash
+./test-deployment-dry-run.sh
+```
+
+This comprehensive test script validates:
+- ✅ Deno installation and version
+- ✅ Denoflare installation with the `--allow-import` flag
+- ✅ Worker TypeScript syntax checking
+- ✅ Worker bundling capability
+- ✅ Configuration file structure (`.denoflare.example`)
+- ✅ GitHub Actions workflow correctness
+- ✅ Documentation consistency across all files
+- ✅ Deployment preparation steps
+
+**Benefits of running the dry run:**
+- Catches configuration errors before deployment
+- Validates that the `--allow-import` fix works correctly
+- Tests that all dependencies can be resolved
+- No credentials or actual deployment required
+- Safe to run in CI/CD pipelines
+
+If all tests pass, you can proceed with confidence to configure credentials and deploy.
+
 ## Local Development
 
 ### 1. Configure Denoflare
