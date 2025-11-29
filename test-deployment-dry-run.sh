@@ -56,6 +56,9 @@ echo "-------------------------------------------------------------------"
 info "Installing Denoflare with updated command..."
 
 # Try the installation
+# Generate a unique name to avoid conflicts with existing installations
+DENOFLARE_TEST_NAME="denoflare-test-$$"
+
 if deno install \
     --unstable-worker-options \
     --allow-read \
@@ -64,7 +67,7 @@ if deno install \
     --global \
     --allow-env \
     --allow-run \
-    --name denoflare-test \
+    --name "$DENOFLARE_TEST_NAME" \
     --force \
     https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts \
     &> /tmp/denoflare-install.log; then
@@ -72,8 +75,8 @@ if deno install \
     
     # Check if the binary is accessible
     export PATH="$HOME/.deno/bin:$PATH"
-    if command -v denoflare-test &> /dev/null; then
-        DENOFLARE_VERSION=$(denoflare-test --version 2>&1 || echo "unknown")
+    if command -v "$DENOFLARE_TEST_NAME" &> /dev/null; then
+        DENOFLARE_VERSION=$("$DENOFLARE_TEST_NAME" --version 2>&1 || echo "unknown")
         pass_test "Denoflare binary is accessible: $DENOFLARE_VERSION"
     else
         fail_test "Denoflare binary not found in PATH"
@@ -191,8 +194,10 @@ if [ -f "/tmp/.denoflare.test" ]; then
     )
     
     for placeholder in "${!placeholders[@]}"; do
-        sed -i "s/${placeholder}/${placeholders[$placeholder]}/g" /tmp/.denoflare.test
+        # Use sed with backup extension for cross-platform compatibility (macOS/Linux)
+        sed -i.bak "s/${placeholder}/${placeholders[$placeholder]}/g" /tmp/.denoflare.test
     done
+    rm -f /tmp/.denoflare.test.bak
     
     pass_test "Config placeholders can be replaced"
 else
@@ -200,20 +205,23 @@ else
 fi
 echo ""
 
-# Test 9: Check if denoflare can parse the config (dry-run)
-echo "Test 9: Testing denoflare config parsing..."
-echo "--------------------------------------------"
-info "Note: This may fail with authentication errors, which is expected"
+# Test 9: Validate denoflare command structure
+echo "Test 9: Validating denoflare command structure..."
+echo "--------------------------------------------------"
+info "Testing that denoflare can be invoked with correct syntax"
 
-# Attempt to run denoflare with the test config
-# We expect this to fail due to dummy credentials, but it should at least parse the config
-# Successfully parsing the config means our configuration structure is correct
-DENOFLARE_OUTPUT=$(denoflare-test push rosetta-translate --config /tmp/.denoflare.test --dry-run 2>&1 || true)
-
-if echo "$DENOFLARE_OUTPUT" | grep -q "rosetta-translate\|config\|script"; then
-    info "Denoflare can attempt to parse the config (auth errors expected)"
+# Test that denoflare push command has correct structure
+# We use --help to avoid actual deployment while validating command syntax
+if "$DENOFLARE_TEST_NAME" push --help 2>&1 | grep -q "push"; then
+    pass_test "Denoflare push command structure is valid"
 else
-    info "Denoflare command structure is correct (actual deployment would require valid credentials)"
+    fail_test "Denoflare push command structure validation failed"
+fi
+
+# Cleanup: Remove the test installation
+if command -v "$DENOFLARE_TEST_NAME" &> /dev/null; then
+    info "Cleaning up test installation..."
+    deno uninstall "$DENOFLARE_TEST_NAME" &> /dev/null || true
 fi
 echo ""
 
