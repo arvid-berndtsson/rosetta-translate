@@ -56,7 +56,18 @@ echo "-------------------------------------------------------------------"
 info "Installing Denoflare with updated command..."
 
 # Try the installation
-if deno install --unstable-worker-options --allow-read --allow-net --allow-import --global --allow-env --allow-run --name denoflare-test --force https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts &> /tmp/denoflare-install.log; then
+if deno install \
+    --unstable-worker-options \
+    --allow-read \
+    --allow-net \
+    --allow-import \
+    --global \
+    --allow-env \
+    --allow-run \
+    --name denoflare-test \
+    --force \
+    https://raw.githubusercontent.com/skymethod/denoflare/v0.7.0/cli/cli.ts \
+    &> /tmp/denoflare-install.log; then
     pass_test "Denoflare installation succeeded with --allow-import flag"
     
     # Check if the binary is accessible
@@ -172,10 +183,16 @@ cp .denoflare.example /tmp/.denoflare.test
 if [ -f "/tmp/.denoflare.test" ]; then
     pass_test "Config file can be created from example"
     
-    # Replace placeholders with dummy values
-    sed -i 's/YOUR_OPENROUTER_API_KEY_HERE/sk-test-key-dummy/g' /tmp/.denoflare.test
-    sed -i 's/YOUR_CLOUDFLARE_ACCOUNT_ID_HERE/test-account-id/g' /tmp/.denoflare.test
-    sed -i 's/YOUR_CLOUDFLARE_API_TOKEN_HERE/test-api-token/g' /tmp/.denoflare.test
+    # Replace placeholders with dummy values for testing
+    declare -A placeholders=(
+        ["YOUR_OPENROUTER_API_KEY_HERE"]="sk-test-key-dummy"
+        ["YOUR_CLOUDFLARE_ACCOUNT_ID_HERE"]="test-account-id"
+        ["YOUR_CLOUDFLARE_API_TOKEN_HERE"]="test-api-token"
+    )
+    
+    for placeholder in "${!placeholders[@]}"; do
+        sed -i "s/${placeholder}/${placeholders[$placeholder]}/g" /tmp/.denoflare.test
+    done
     
     pass_test "Config placeholders can be replaced"
 else
@@ -187,8 +204,13 @@ echo ""
 echo "Test 9: Testing denoflare config parsing..."
 echo "--------------------------------------------"
 info "Note: This may fail with authentication errors, which is expected"
-# This will fail with auth errors but should at least parse the config
-if denoflare-test push rosetta-translate --config /tmp/.denoflare.test --dry-run 2>&1 | grep -q "rosetta-translate\|config\|script" || true; then
+
+# Attempt to run denoflare with the test config
+# We expect this to fail due to dummy credentials, but it should at least parse the config
+# Successfully parsing the config means our configuration structure is correct
+DENOFLARE_OUTPUT=$(denoflare-test push rosetta-translate --config /tmp/.denoflare.test --dry-run 2>&1 || true)
+
+if echo "$DENOFLARE_OUTPUT" | grep -q "rosetta-translate\|config\|script"; then
     info "Denoflare can attempt to parse the config (auth errors expected)"
 else
     info "Denoflare command structure is correct (actual deployment would require valid credentials)"
